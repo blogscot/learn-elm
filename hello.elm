@@ -1,6 +1,9 @@
-import Html exposing (Html, button, div, text)
+import Html exposing (..)
 import Html.App as Html
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput, onClick)
+import String exposing (..)
+import Regex exposing (..)
 
 
 main =
@@ -9,28 +12,43 @@ main =
 
 -- MODEL
 
-type alias Model = Int
+type alias Model =
+  { name : String
+  , password : String
+  , passwordAgain : String
+  , showValidation : Bool
+  }
+
 
 model : Model
 model =
-  0
+  Model "" "" "" False
 
 
 -- UPDATE
 
-type Msg = Increment | Decrement | Reset
+type Msg
+    = Name String
+    | Password String
+    | PasswordAgain String
+    | ValidateForm
+
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    Name name ->
+      { model | name = name }
 
-    Decrement ->
-      model - 1
+    Password password ->
+      { model | password = password }
 
-    Reset ->
-      0
+    PasswordAgain password ->
+      { model | passwordAgain = password }
+
+    ValidateForm ->
+      { model | showValidation = True }
+
 
 
 -- VIEW
@@ -38,10 +56,43 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (toString model) ]
-    , button [ onClick Increment ] [ text "+" ]
+    [ input [ type' "text", placeholder "Name", onInput Name ] []
+    , input [ type' "password", placeholder "Password", onInput Password ] []
+    , input [ type' "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
     , Html.br [] []
-    , button [ onClick Reset] [ text "Reset" ]
+    , button [onClick ValidateForm ] [text "Submit"]
+    , viewValidation model
     ]
+
+
+containsNumbers : String -> Bool
+containsNumbers text =
+  Regex.contains(regex "[0-9]") text
+
+
+containsMixedCase : String -> Bool
+containsMixedCase text =
+  if String.length text == 0 then
+    False
+  else if String.toLower text == text then
+    False
+  else
+    True
+
+viewValidation : Model -> Html msg
+viewValidation model =
+  let
+    (color, message) =
+      if not model.showValidation then
+        ("green", "OK")
+      else if not (containsMixedCase model.password) || not (containsNumbers model.password) then
+        ("red", "Passwords should contain both upper, lower case letters plus numbers.")
+      else if String.length model.password < 8 then
+        ("red", "Minimum password length is 8")
+      else if model.password == model.passwordAgain then
+        ("green", "OK")
+      else
+        ("red", "Passwords do not match!")
+  in
+    div [ style [("color", color)] ] [ text message ]
 
