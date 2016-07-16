@@ -15,7 +15,6 @@ main =
 
 -- MODEL
 
-
 type alias Model =
   { firstDie : Int
   , secondDie : Int
@@ -28,7 +27,6 @@ init =
 
 
 -- UPDATE
-
 
 type Msg
   = Roll
@@ -56,20 +54,19 @@ update msg model =
 
 -- SUBSCRIPTIONS
 
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
 
-
 -- VIEW
-
 
 view : Model -> Html Msg
 view model =
   div []
-    [ h1 [] [ text (toString model.firstDie ++ " " ++ toString model.secondDie) ]
+    [
+      h1 [] [ text ("D10: " ++ toString model.firstDie) ]
+    , h1 [] [ text ("D12: " ++ toString model.secondDie) ]
     , button [ onClick Roll ] [ text "Roll" ]
     ]
 
