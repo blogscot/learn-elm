@@ -1,12 +1,10 @@
-import Html exposing (Html, div, button)
+import Html exposing (Html, div)
 import Html.App as App
 import Html.Events exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Time exposing (Time, second)
+import Time exposing (Time, second, hour)
 import Debug exposing (log)
-
-
 
 main =
   App.program
@@ -21,7 +19,6 @@ main =
 
 type alias Model = Time
 
-
 init : (Model, Cmd Msg)
 init =
   (0, Cmd.none)
@@ -32,13 +29,11 @@ init =
 type Msg
   = Tick Time
 
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Tick newTime ->
       (newTime, Cmd.none)
-
 
 
 -- SUBSCRIPTIONS
@@ -56,7 +51,7 @@ view model =
     vertialOffset = pi / 2
     secondAngle = turns (Time.inMinutes model) - vertialOffset
     minuteAngle = turns (Time.inHours model) - vertialOffset
-    hourAngle = turns (Time.inHours model / 24) - vertialOffset
+    hourAngle = turns (Time.inHours model) / 24 + vertialOffset
 
     secondHandX = toString <| 50 + 40 * cos secondAngle
     secondHandY = toString <| 50 + 40 * sin secondAngle
