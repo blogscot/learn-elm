@@ -49,11 +49,11 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-    ninetyFiveDegrees = pi / 2
-    secondAngle = turns (Time.inMinutes model) - ninetyFiveDegrees
-    minuteAngle = turns (Time.inHours model) - ninetyFiveDegrees
+    ninetyDegrees = pi / 2
+    secondAngle = turns (Time.inMinutes model) - ninetyDegrees
+    minuteAngle = turns (Time.inHours model) - ninetyDegrees
     -- hour hand should rotate once every 12 hours
-    hourAngle = turns (Time.inHours model / 12) - ninetyFiveDegrees
+    hourAngle = turns (Time.inHours model / 12) - ninetyDegrees
 
     secondHandX = toString <| 50 + 40 * cos secondAngle
     secondHandY = toString <| 50 + 40 * sin secondAngle
