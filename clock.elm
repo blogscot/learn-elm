@@ -1,6 +1,7 @@
 import Html exposing (Html, div)
-import Html.App as App
+import Html.Attributes exposing (style)
 import Html.Events exposing (..)
+import Html.App as App
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second, hour)
@@ -48,10 +49,11 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-    vertialOffset = pi / 2
-    secondAngle = turns (Time.inMinutes model) - vertialOffset
-    minuteAngle = turns (Time.inHours model) - vertialOffset
-    hourAngle = turns (Time.inHours model) / 24 + vertialOffset
+    fortyFiveDegrees = pi / 2
+    secondAngle = turns (Time.inMinutes model) - fortyFiveDegrees
+    minuteAngle = turns (Time.inHours model) - fortyFiveDegrees
+    -- hour hand should rotate once every 12 hours
+    hourAngle = turns (Time.inHours model / 12) - fortyFiveDegrees
 
     secondHandX = toString <| 50 + 40 * cos secondAngle
     secondHandY = toString <| 50 + 40 * sin secondAngle
@@ -63,11 +65,18 @@ view model =
     hourHandY = toString <| 50 + 30 * sin hourAngle
 
   in
-    div [] [
+    div [ clockStyle ] [
       svg [ viewBox "0 0 100 100", width "300px" ]
-      [ circle [ cx "50", cy "50", r "45", fill "#0B79CE" ] []
-      , line [ x1 "50", y1 "50", x2 hourHandX, y2 hourHandY, stroke "#023963" ] []
-      , line [ x1 "50", y1 "50", x2 minuteHandX, y2 minuteHandY, stroke "#023963" ] []
+      [ circle [ cx "50", cy "50", r "45", fill "#2B89aE" ] []
+      , line [ x1 "50", y1 "50", x2 hourHandX, y2 hourHandY, stroke "#f2f900" ] []
+      , line [ x1 "50", y1 "50", x2 minuteHandX, y2 minuteHandY, stroke "#e28963" ] []
       , line [ x1 "50", y1 "50", x2 secondHandX, y2 secondHandY, stroke "#fff" ] []
       ]
+    ]
+
+clockStyle : Attribute msg
+clockStyle =
+  Html.Attributes.style
+    [ ("width", "20%")
+    , ("margin", "0 auto")
     ]
