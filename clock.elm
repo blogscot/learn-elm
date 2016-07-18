@@ -1,4 +1,4 @@
-import Html exposing (Html, div)
+import Html exposing (Html, div, button)
 import Html.Attributes exposing (style)
 import Html.Events exposing (..)
 import Html.App as App
@@ -18,30 +18,41 @@ main =
 
 -- MODEL
 
-type alias Model = Time
+type alias Model =
+  { time : Time
+   , pause : Bool
+ }
 
 init : (Model, Cmd Msg)
 init =
-  (0, Cmd.none)
+  (Model 0 False, Cmd.none)
 
 
 -- UPDATE
 
 type Msg
   = Tick Time
+  | Pause Bool
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Tick newTime ->
-      (newTime, Cmd.none)
+      ({ model | time = newTime }, Cmd.none)
+
+    Pause state ->
+      ({model | pause = state }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every second Tick
+  if model.pause then
+    Sub.none
+  else
+    Time.every second Tick
+
 
 
 -- VIEW
@@ -50,10 +61,10 @@ view : Model -> Html Msg
 view model =
   let
     ninetyDegrees = pi / 2
-    secondAngle = turns (Time.inMinutes model) - ninetyDegrees
-    minuteAngle = turns (Time.inHours model) - ninetyDegrees
+    secondAngle = turns (Time.inMinutes model.time) - ninetyDegrees
+    minuteAngle = turns (Time.inHours model.time) - ninetyDegrees
     -- hour hand should rotate once every 12 hours
-    hourAngle = turns (Time.inHours model / 12) - ninetyDegrees
+    hourAngle = turns (Time.inHours model.time / 12) - ninetyDegrees
 
     secondHandX = toString <| 50 + 40 * cos secondAngle
     secondHandY = toString <| 50 + 40 * sin secondAngle
@@ -71,7 +82,8 @@ view model =
       , line [ x1 "50", y1 "50", x2 hourHandX, y2 hourHandY, stroke "#f2f900" ] []
       , line [ x1 "50", y1 "50", x2 minuteHandX, y2 minuteHandY, stroke "#e28963" ] []
       , line [ x1 "50", y1 "50", x2 secondHandX, y2 secondHandY, stroke "#fff" ] []
-      ]
+      ],
+      button [ onClick <| Pause <| not model.pause] [ text "Pause"]
     ]
 
 clockStyle : Attribute msg
